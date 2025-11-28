@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spardha 2026 - Registration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
+    <div class="background-overlay"></div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h2 class="logo">🏆 Spardha 2026</h2>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/form" class="active">Register</a></li>
+                <li><a href="/contact">Contact</a></li>
+                <li><a href="/admin">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-header">
+            <h1 class="form-title">Sports Registration</h1>
+            <p class="form-subtitle">Join Spardha 2026 - Showcase Your Talent!</p>
+        </div>
+
+        <% if (typeof success !== 'undefined' && success === 'true') { %>
+            <div class="alert alert-success">
+                <span class="alert-icon">✓</span>
+                <span>Registration successful! Thank you for registering.</span>
+            </div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error === 'true') { %>
+            <div class="alert alert-error">
+                <span class="alert-icon">✕</span>
+                <span>Registration failed. Please try again.</span>
+            </div>
+        <% } %>
+
+        <form id="sportsForm" action="/form" method="POST" class="registration-form">
+            <div class="form-section">
+                <h3 class="section-title">Personal Information</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">
+                            <span class="label-icon">👤</span>
+                            Full Name <span class="required">*</span>
+                        </label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="course">
+                            <span class="label-icon">📚</span>
+                            Course <span class="required">*</span>
+                        </label>
+                        <input type="text" id="course" name="course" required placeholder="e.g., B.Tech, B.Sc, etc.">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="year">
+                            <span class="label-icon">🎓</span>
+                            Year <span class="required">*</span>
+                        </label>
+                        <select id="year" name="year" required>
+                            <option value="">Select Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <span class="label-icon">⚧</span>
+                            Gender <span class="required">*</span>
+                        </label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="boy" required>
+                                <span class="radio-custom">👨 Boy</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="girl" required>
+                                <span class="radio-custom">👩 Girl</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Sports Selection</h3>
+                <p class="section-description">Select all sports you want to participate in</p>
+                
+                <div class="checkbox-group">
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="cricket">
+                        <span class="checkbox-custom">🏏 Cricket</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="football">
+                        <span class="checkbox-custom">⚽ Football</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="volleyball">
+                        <span class="checkbox-custom">🏐 Volleyball</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="badminton-single">
+                        <span class="checkbox-custom">🏸 Badminton (Singles)</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="badminton-doubles">
+                        <span class="checkbox-custom">🏸 Badminton (Doubles)</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="badminton-mixed">
+                        <span class="checkbox-custom">🏸 Badminton (Mixed)</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="carrom-singles">
+                        <span class="checkbox-custom">🎯 Carrom (Singles)</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="carrom-doubles">
+                        <span class="checkbox-custom">🎯 Carrom (Doubles)</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="chess">
+                        <span class="checkbox-custom">♟️ Chess</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="partnersSection" class="form-section" style="display: none;">
+                <h3 class="section-title">Sport Partners</h3>
+                <p class="section-description">Enter your partner's name for team sports</p>
+                <div id="partnersContainer"></div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">Submit Registration</span>
+                    <span class="btn-icon">🚀</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="/js/form.js"></script>
+</body>
+</html>
