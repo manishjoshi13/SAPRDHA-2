@@ -93,7 +93,8 @@ const formSchema = new mongoose.Schema({
             required: [true, 'Partner name is required'],
             trim: true,
             maxlength: [100, 'Partner name is too long']
-        }
+        },
+        default: []
     }],
     
     
@@ -133,11 +134,13 @@ formSchema.virtual('fullName').get(function() {
 });
 
 // Pre-save hook to update lastUpdated
-formSchema.pre('save', function(next) {
-    this.lastUpdated = Date.now();
+// formSchema.pre('save', function(next) {
+//     this.lastUpdated = Date.now();
+//     next();
+
 
     
-});
+// });
 
 // Static method to get sport categories
 formSchema.statics.getSportCategories = function() {

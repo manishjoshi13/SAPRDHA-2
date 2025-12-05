@@ -141,6 +141,7 @@ app.post("/form", async (req, res) => {
         if (existingEmail) {
             return res.redirect('/form?error=duplicate');
         }
+        console.log("--------------------------------");
 
         // Save the form data
         await formData.save();
