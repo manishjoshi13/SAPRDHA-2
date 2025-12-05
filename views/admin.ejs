@@ -6,7 +6,7 @@
     <title>Admin Dashboard - Spardha 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Horizon:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
@@ -17,7 +17,6 @@
                 <li><a href="/">Home</a></li>
                 <li><a href="/form">Register</a></li>
                 <li><a href="/contact">Contact</a></li>
-                <li><a href="/admin" class="active">Admin</a></li>
             </ul>
         </div>
     </nav>
@@ -32,26 +31,53 @@
             <div class="filters">
                 <div class="filter-group">
                     <label for="sportFilter">
-                        <span class="filter-icon">🏏</span>
                         Filter by Sport
                     </label>
                     <select id="sportFilter">
                         <option value="">All Sports</option>
-                        <option value="cricket">Cricket</option>
-                        <option value="football">Football</option>
-                        <option value="volleyball">Volleyball</option>
-                        <option value="badminton-single">Badminton (Singles)</option>
-                        <option value="badminton-doubles">Badminton (Doubles)</option>
-                        <option value="badminton-mixed">Badminton (Mixed)</option>
-                        <option value="carrom-singles">Carrom (Singles)</option>
-                        <option value="carrom-doubles">Carrom (Doubles)</option>
-                        <option value="chess">Chess</option>
+                        <optgroup label="Outdoor Sports">
+                            <option value="cricket">Cricket</option>
+                            <option value="football">Football</option>
+                            <option value="volleyball">Volleyball</option>
+                        </optgroup>
+                        <optgroup label="Indoor Sports">
+                            <option value="badminton-single">Badminton (Singles)</option>
+                            <option value="badminton-doubles">Badminton (Doubles)</option>
+                            <option value="badminton-mixed">Badminton (Mixed Doubles)</option>
+                            <option value="tabletennis-single">Table Tennis (Singles)</option>
+                            <option value="tabletennis-doubles">Table Tennis (Doubles)</option>
+                            <option value="tabletennis-mixed">Table Tennis (Mixed Doubles)</option>
+                            <option value="carrom-singles">Carrom (Singles)</option>
+                            <option value="carrom-doubles">Carrom (Doubles)</option>
+                            <option value="chess">Chess</option>
+                        </optgroup>
+                        <optgroup label="Athletics">
+                            <option value="100m">100m Sprint</option>
+                            <option value="200m">200m Sprint</option>
+                            <option value="650m">650m Race</option>
+                            <option value="1200m">1200m Race</option>
+                            <option value="relay">4x100m Relay</option>
+                        </optgroup>
+                        <optgroup label="Fun Activities">
+                            <option value="dodgeball">Dodgeball</option>
+                            <option value="tugofwar">Tug of War</option>
+                            <option value="lemonspoon">Lemon Spoon Race</option>
+                            <option value="sackrace">Sack Race</option>
+                            <option value="threelegrace">Three Leg Race</option>
+                            <option value="facepainting">Face Painting</option>
+                            <option value="calligraphy">Calligraphy</option>
+                            <option value="creativewriting">Creative Writing</option>
+                            <option value="cooking">Cooking Without Fire</option>
+                            <option value="bestoutofwaste">Best Out of Waste</option>
+                            <option value="mehandi">Mehandi</option>
+                            <option value="poetry">Poetry</option>
+                            <option value="graphicdesign">Graphic Design</option>
+                        </optgroup>
                     </select>
                 </div>
                 
                 <div class="filter-group">
                     <label for="yearFilter">
-                        <span class="filter-icon">🎓</span>
                         Filter by Year
                     </label>
                     <select id="yearFilter">
@@ -65,7 +91,6 @@
 
                 <div class="filter-group">
                     <label for="genderFilter">
-                        <span class="filter-icon">⚧</span>
                         Filter by Gender
                     </label>
                     <select id="genderFilter">
@@ -78,11 +103,9 @@
                 <div class="filter-actions">
                     <button id="applyFilters" class="btn-primary">
                         <span>Apply Filters</span>
-                        <span class="btn-icon">🔍</span>
                     </button>
                     <button id="downloadPDF" class="btn-download">
                         <span>Download PDF</span>
-                        <span class="btn-icon">📥</span>
                     </button>
                 </div>
             </div>

@@ -5,19 +5,20 @@ const path = require("path");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const PDFDocument = require("pdfkit");
+require("dotenv").config();
 
 // model
-const Form = require("./models/form")
+const { Form } = require("./models/form");
 
 // Database Connection
 async function main() {
-    await mongoose.connect('mongodb://127.0.0.1:27017/spardha');
+    await mongoose.connect(process.env.MONGODB_URI);
 }
 main()
     .then(() => console.log("Connection success"))
     .catch((err) => console.log(err));
 
-// View Engine Setup
+// View Engine Setupge 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
@@ -48,9 +49,19 @@ app.get("/admin", (req, res) => {
 // Form Submission (CREATE)
 app.post("/form", async (req, res) => {
     try {
-        const { name, course, year, gender, sports, partners } = req.body;
+        const { 
+            name, 
+            email, 
+            course, 
+            year, 
+            gender, 
+            sports, 
+            partners
+        } = req.body;
         
-        console.log("Received form data:", { name, course, year, gender, sports, partners });
+        console.log("Received form data:", { 
+            name, email, course, year, gender, sports, partners
+        });
         
         // Process sports array (handle both single and multiple selections)
         let sportsArray = [];
@@ -60,52 +71,101 @@ app.post("/form", async (req, res) => {
             sportsArray = [sports];
         }
 
-        // Process partners object to array format
+        // Process partners array
         let partnersArray = [];
         if (partners) {
-            // Handle both object format and array format
-            if (typeof partners === 'object' && !Array.isArray(partners)) {
-                Object.keys(partners).forEach(sport => {
-                    const partnerName = partners[sport];
-                    // Handle both string and object formats
-                    let name = '';
-                    if (typeof partnerName === 'string') {
-                        name = partnerName.trim();
-                    } else if (partnerName && typeof partnerName === 'object' && partnerName.name) {
-                        name = partnerName.name.trim();
-                    }
-                    
-                    if (name) {
+            if (Array.isArray(partners)) {
+                partnersArray = partners.filter(p => p && p.name && p.sport);
+            } else if (typeof partners === 'object') {
+                // Handle object format from form
+                Object.entries(partners).forEach(([sport, data]) => {
+                    if (data && data.name && typeof data.name === 'string' && data.name.trim && data.name.trim()) {
                         partnersArray.push({
                             sport: sport,
-                            name: name
+                            name: data.name.trim()
                         });
                     }
                 });
-            } else if (Array.isArray(partners)) {
-                partnersArray = partners.filter(p => p && p.name && p.sport);
             }
         }
 
-        console.log("Processed partners:", partnersArray);
 
+        // Validate required fields
+        if (!name || !email || !course || !year || !gender) {
+            return res.redirect('/form?error=true');
+        }
+
+        // Create form data
         const formData = new Form({
-            name: name.trim(),
-            course: course.trim(),
-            year: parseInt(year),
+            // Basic Information
+            name: name ? name.trim() : '',
+            email: email ? email.trim().toLowerCase() : '',
+            course: course ? course.trim() : '',
+            year: parseInt(year, 10),
             gender: gender,
+            
+            // Sports Selection
             sports: sportsArray,
-            partners: partnersArray
+            
+            // Partners
+            partners: partnersArray,
+            
+            // System Fields
+            status: 'pending',
+            registrationDate: new Date(),
+            lastUpdated: new Date()
         });
 
-        const savedData = await formData.save();
-        console.log("Saved registration:", JSON.stringify(savedData, null, 2));
-        console.log("Saved partners:", savedData.partners);
-        res.redirect("/form?success=true");
+        // Validate the form data against the schema
+        const validationError = formData.validateSync();
+        if (validationError) {
+            console.error('Validation error:', validationError);
+            const errors = {};
+            if (validationError.errors) {
+                Object.keys(validationError.errors).forEach(key => {
+                    errors[key] = validationError.errors[key].message;
+                });
+            }
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Validation failed',
+                errors: errors
+            });
+        }
+
+        // Check for duplicate email
+        const existingEmail = await Form.findOne({
+            email: formData.email.toLowerCase()
+        });
+
+        if (existingEmail) {
+            return res.redirect('/form?error=duplicate');
+        }
+
+        // Save the form data
+        await formData.save();
+        console.log("Form data saved successfully");
+        
+        // Send success response with redirect
+        res.redirect('/form?success=true');
     } catch (error) {
-        console.error("Error saving form:", error);
-        console.error("Error details:", error.message);
-        res.redirect("/form?error=true");
+        console.error("Error saving form data:", error);
+        
+        // Handle specific error types
+        if (error.name === 'ValidationError') {
+            console.error('Validation error:', error);
+            return res.redirect('/form?error=true');
+        }
+        
+        // Handle duplicate key errors (unique email constraint)
+        if (error.code === 11000) {
+            console.error('Duplicate key error:', error);
+            return res.redirect('/form?error=duplicate');
+        }
+        
+        // Generic error response
+        console.error('Error saving form:', error);
+        res.redirect('/form?error=true');
     }
 });
 
@@ -142,7 +202,7 @@ app.delete("/admin/:id", async (req, res) => {
 app.put("/admin/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, course, year, gender, sports, partners } = req.body;
+        const { name, email, course, year, gender, sports, partners } = req.body;
         
         let sportsArray = [];
         if (Array.isArray(sports)) {
@@ -165,18 +225,40 @@ app.put("/admin/:id", async (req, res) => {
         }
 
         const updatedData = {
-            name: name.trim(),
-            course: course.trim(),
+            name: name ? name.trim() : '',
+            email: email ? email.trim().toLowerCase() : '',
+            course: course ? course.trim() : '',
             year: parseInt(year),
             gender: gender,
             sports: sportsArray,
             partners: partnersArray
         };
 
+        // Check for duplicate email (excluding current registration)
+        if (email) {
+            const existingEmail = await Form.findOne({
+                email: updatedData.email.toLowerCase(),
+                _id: { $ne: id }
+            });
+
+            if (existingEmail) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: "This email is already registered" 
+                });
+            }
+        }
+
         await Form.findByIdAndUpdate(id, updatedData);
         res.json({ success: true });
     } catch (error) {
         console.error("Error updating registration:", error);
+        if (error.code === 11000) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "This email is already registered" 
+            });
+        }
         res.status(500).json({ error: "Failed to update registration" });
     }
 });

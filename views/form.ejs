@@ -6,7 +6,7 @@
     <title>Spardha 2026 - Registration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Horizon:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
@@ -18,7 +18,6 @@
                 <li><a href="/">Home</a></li>
                 <li><a href="/form" class="active">Register</a></li>
                 <li><a href="/contact">Contact</a></li>
-                <li><a href="/admin">Admin</a></li>
             </ul>
         </div>
     </nav>
@@ -38,7 +37,13 @@
         <% if (typeof error !== 'undefined' && error === 'true') { %>
             <div class="alert alert-error">
                 <span class="alert-icon">✕</span>
-                <span>Registration failed. Please try again.</span>
+                <span>Registration failed. Please check all fields and try again.</span>
+            </div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error === 'duplicate') { %>
+            <div class="alert alert-error">
+                <span class="alert-icon">✕</span>
+                <span>This email is already registered. Please use a different email address.</span>
             </div>
         <% } %>
 
@@ -49,15 +54,22 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="name">
-                            <span class="label-icon">👤</span>
                             Full Name <span class="required">*</span>
                         </label>
                         <input type="text" id="name" name="name" required placeholder="Enter your full name">
                     </div>
 
                     <div class="form-group">
+                        <label for="email">
+                            Email <span class="required">*</span>
+                        </label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email address">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
                         <label for="course">
-                            <span class="label-icon">📚</span>
                             Course <span class="required">*</span>
                         </label>
                         <input type="text" id="course" name="course" required placeholder="e.g., B.Tech, B.Sc, etc.">
@@ -67,7 +79,6 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="year">
-                            <span class="label-icon">🎓</span>
                             Year <span class="required">*</span>
                         </label>
                         <select id="year" name="year" required>
@@ -81,17 +92,16 @@
 
                     <div class="form-group">
                         <label>
-                            <span class="label-icon">⚧</span>
                             Gender <span class="required">*</span>
                         </label>
                         <div class="radio-group">
                             <label class="radio-label">
                                 <input type="radio" name="gender" value="boy" required>
-                                <span class="radio-custom">👨 Boy</span>
+                                <span class="radio-custom">Boy</span>
                             </label>
                             <label class="radio-label">
                                 <input type="radio" name="gender" value="girl" required>
-                                <span class="radio-custom">👩 Girl</span>
+                                <span class="radio-custom">Girl</span>
                             </label>
                         </div>
                     </div>
@@ -99,8 +109,8 @@
             </div>
 
             <div class="form-section">
-                <h3 class="section-title">Sports Selection</h3>
-                <p class="section-description">Select all sports you want to participate in</p>
+                <h3 class="section-title">🏟️ Outdoor Sports</h3>
+                <p class="section-description">Select all outdoor sports you want to participate in</p>
                 
                 <div class="checkbox-group">
                     <label class="sport-checkbox">
@@ -115,43 +125,173 @@
                         <input type="checkbox" name="sports" value="volleyball">
                         <span class="checkbox-custom">🏐 Volleyball</span>
                     </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">🏠 Indoor Sports</h3>
+                <p class="section-description">Select all indoor sports you want to participate in</p>
+                
+                <div class="checkbox-group">
+                    <div class="sport-category">
+                        <h4 class="sport-subcategory">Badminton</h4>
+                        <div class="subcategory-options">
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="badminton-single">
+                                <span class="checkbox-custom">🏸 Singles</span>
+                            </label>
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="badminton-doubles">
+                                <span class="checkbox-custom">Doubles</span>
+                            </label>
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="badminton-mixed">
+                                <span class="checkbox-custom">Mixed Doubles</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="sport-category">
+                        <h4 class="sport-subcategory">Table Tennis</h4>
+                        <div class="subcategory-options">
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="tabletennis-single">
+                                <span class="checkbox-custom"> Singles</span>
+                            </label>
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="tabletennis-doubles">
+                                <span class="checkbox-custom">Doubles</span>
+                            </label>
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="tabletennis-mixed">
+                                <span class="checkbox-custom">Mixed Doubles</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="sport-category">
+                        <h4 class="sport-subcategory">Carrom</h4>
+                        <div class="subcategory-options">
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="carrom-singles">
+                                <span class="checkbox-custom">🏸 Singles</span>
+                            </label>
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="carrom-doubles">
+                                <span class="checkbox-custom">Doubles</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="sport-category">
+                        <h4 class="sport-subcategory">Chess</h4>
+                        <div class="subcategory-options">
+                            <label class="sport-checkbox">
+                                <input type="checkbox" name="sports" value="chess-singles">
+                                <span class="checkbox-custom">♟️ Chess </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">🏃 Athletics</h3>
+                <p class="section-description">Select all athletic events you want to participate in</p>
+                
+                <div class="checkbox-group">
                     <label class="sport-checkbox">
-                        <input type="checkbox" name="sports" value="badminton-single">
-                        <span class="checkbox-custom">🏸 Badminton (Singles)</span>
+                        <input type="checkbox" name="sports" value="100m">
+                        <span class="checkbox-custom">� 100m Sprint</span>
                     </label>
                     <label class="sport-checkbox">
-                        <input type="checkbox" name="sports" value="badminton-doubles">
-                        <span class="checkbox-custom">🏸 Badminton (Doubles)</span>
+                        <input type="checkbox" name="sports" value="200m">
+                        <span class="checkbox-custom">🏃 200m Sprint</span>
                     </label>
                     <label class="sport-checkbox">
-                        <input type="checkbox" name="sports" value="badminton-mixed">
-                        <span class="checkbox-custom">🏸 Badminton (Mixed)</span>
+                        <input type="checkbox" name="sports" value="650m">
+                        <span class="checkbox-custom">🏃 650m Race</span>
                     </label>
                     <label class="sport-checkbox">
-                        <input type="checkbox" name="sports" value="carrom-singles">
-                        <span class="checkbox-custom">🎯 Carrom (Singles)</span>
+                        <input type="checkbox" name="sports" value="1200m">
+                        <span class="checkbox-custom">🏃 1200m Race</span>
                     </label>
                     <label class="sport-checkbox">
-                        <input type="checkbox" name="sports" value="carrom-doubles">
-                        <span class="checkbox-custom">🎯 Carrom (Doubles)</span>
+                        <input type="checkbox" name="sports" value="relay">
+                        <span class="checkbox-custom">🏃 4x100m Relay</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">🎉 Fun Activities</h3>
+                <p class="section-description">Select any fun activities you want to participate in</p>
+                
+                <div class="checkbox-group">
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="dodgeball">
+                        <span class="checkbox-custom">🤾 Dodgeball</span>
                     </label>
                     <label class="sport-checkbox">
-                        <input type="checkbox" name="sports" value="chess">
-                        <span class="checkbox-custom">♟️ Chess</span>
+                        <input type="checkbox" name="sports" value="tugofwar">
+                        <span class="checkbox-custom">🪢 Tug of War</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="lemonspoon">
+                        <span class="checkbox-custom">� Lemon Spoon Race</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="sackrace">
+                        <span class="checkbox-custom">🛍️ Sack Race</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="threelegrace">
+                        <span class="checkbox-custom">🦵 Three Leg Race</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="facepainting">
+                        <span class="checkbox-custom">🎨 Face Painting</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="calligraphy">
+                        <span class="checkbox-custom">✍️ Calligraphy</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="creativewriting">
+                        <span class="checkbox-custom">📝 Creative Writing</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="cooking">
+                        <span class="checkbox-custom">👨‍� Cooking Without Fire</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="bestoutofwaste">
+                        <span class="checkbox-custom">♻️ Best Out of Waste</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="mehandi">
+                        <span class="checkbox-custom">🌿 Mehandi</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="poetry">
+                        <span class="checkbox-custom">📜 Poetry</span>
+                    </label>
+                    <label class="sport-checkbox">
+                        <input type="checkbox" name="sports" value="graphicdesign">
+                        <span class="checkbox-custom">🎨 Graphic Design</span>
                     </label>
                 </div>
             </div>
 
             <div id="partnersSection" class="form-section" style="display: none;">
-                <h3 class="section-title">Sport Partners</h3>
-                <p class="section-description">Enter your partner's name for team sports</p>
+                <h3 class="section-title">👥 Partner Information</h3>
+                <p class="section-description">Enter your partner's details for doubles and mixed doubles sports</p>
                 <div id="partnersContainer"></div>
             </div>
 
             <div class="form-actions">
                 <button type="submit" class="submit-btn">
                     <span class="btn-text">Submit Registration</span>
-                    <span class="btn-icon">🚀</span>
                 </button>
             </div>
         </form>

@@ -188,7 +188,7 @@ function displayRegistrations(registrations) {
                     <td>${sportsList}</td>
                     <td>${partnersHtml}</td>
                     <td>
-                        <button class="btn-edit" onclick="editRegistration('${reg._id}')">Edit</button>
+                       
                         <button class="btn-delete" onclick="deleteRegistration('${reg._id}')">Delete</button>
                     </td>
                 `;

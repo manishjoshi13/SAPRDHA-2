@@ -1,0 +1,5 @@
+These lines need manual fixing:
+Line 190: Replace corrupted emoji before "100m Sprint" with just "100m Sprint"
+Line 226: Replace corrupted emoji before "Lemon Spoon Race" with just "Lemon Spoon Race"  
+Line 250: Replace corrupted emoji before "Cooking Without Fire" with just "Cooking Without Fire"
+

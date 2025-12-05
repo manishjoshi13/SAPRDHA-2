@@ -51,8 +51,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Sports that require partners
-    const partnerSports = ['badminton-doubles', 'badminton-mixed', 'carrom-doubles'];
+    // Sports that require partners (only doubles and mixed doubles)
+    const partnerSports = [
+        'badminton-doubles', 'badminton-mixed', 'tabletennis-doubles', 
+        'tabletennis-mixed', 'carrom-doubles'
+    ];
+    
+    // Sports with specific partner labels
+    const specialPartnerSports = {
+        'badminton-doubles': 'Badminton Doubles Partner',
+        'badminton-mixed': 'Badminton Mixed Doubles Partner',
+        'tabletennis-doubles': 'Table Tennis Doubles Partner',
+        'tabletennis-mixed': 'Table Tennis Mixed Doubles Partner',
+        'carrom-doubles': 'Carrom Doubles Partner'
+    };
 
     // Utility function to animate height auto (GSAP doesn't support height:auto directly)
     function animateHeightAuto(element, animOpts = {}) {
@@ -78,16 +90,21 @@ document.addEventListener('DOMContentLoaded', function() {
             .filter(cb => cb.checked)
             .map(cb => cb.value);
 
-        const needsPartners = selectedSports.some(sport => partnerSports.includes(sport));
+        const needsPartners = selectedSports.some(sport => 
+            partnerSports.includes(sport)
+        );
 
         if (needsPartners) {
             // Save existing input values before any changes
             const existingValues = {};
-            const existingInputs = partnersContainer.querySelectorAll('input[type="text"]');
+            const existingInputs = partnersContainer.querySelectorAll('input[data-sport]');
             existingInputs.forEach(input => {
                 const sport = input.getAttribute('data-sport');
                 if (sport) {
-                    existingValues[sport] = input.value; // Save even if empty to preserve state
+                    if (!existingValues[sport]) {
+                        existingValues[sport] = {};
+                    }
+                    existingValues[sport].name = input.value; // Save even if empty to preserve state
                 }
             });
 
@@ -98,42 +115,62 @@ document.addEventListener('DOMContentLoaded', function() {
             partnersSection.style.overflow = 'visible'; // Ensure visible while animating
 
             // Get currently selected partner sports
-            const selectedPartnerSports = selectedSports.filter(sport => partnerSports.includes(sport));
+            const selectedPartnerSports = selectedSports.filter(sport => 
+                partnerSports.includes(sport)
+            );
 
             // Remove inputs for sports that are no longer selected
             const existingDivs = partnersContainer.querySelectorAll('.partner-input');
             existingDivs.forEach(div => {
-                const input = div.querySelector('input');
+                const input = div.querySelector('input[data-sport]');
                 const sport = input ? input.getAttribute('data-sport') : null;
                 if (sport && !selectedPartnerSports.includes(sport)) {
                     div.remove();
                 }
             });
 
-            // Add or update partner inputs for selected sports
+            // Add or update partner/team inputs for selected sports
             let newInputs = [];
+            
             selectedPartnerSports.forEach(sport => {
-                let existingInput = document.getElementById(`partner-${sport}`);
-
-                if (!existingInput) {
-                    // Create new input if it doesn't exist
-                    const partnerDiv = document.createElement('div');
-                    partnerDiv.className = 'partner-input';
-                    const savedValue = existingValues[sport] || '';
-                    partnerDiv.innerHTML = `
-                        <label for="partner-${sport}">Partner Name for ${sport.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} <span class="required">*</span></label>
-                        <input type="text" name="partners[${sport}]" data-sport="${sport}" id="partner-${sport}" required placeholder="Enter partner name" value="${savedValue}">
-                    `;
-                    partnersContainer.appendChild(partnerDiv);
-                    newInputs.push(partnerDiv);
-                    gsap.from(partnerDiv, {
-                        duration: 0.4,
-                        x: -20,
-                        opacity: 0,
-                        delay: wasHidden ? 0.3 : 0.1,
-                        ease: 'power2.out'
-                    });
+                // Handle regular partner sports
+                if (partnerSports.includes(sport)) {
+                    const existingInput = document.getElementById(`partner-name-${sport}`);
+                    if (!existingInput) {
+                        const partnerDiv = document.createElement('div');
+                        partnerDiv.className = 'partner-input';
+                        const savedValue = existingValues[sport] || {};
+                        const displayName = specialPartnerSports[sport] || 
+                            sport.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                        
+                        partnerDiv.innerHTML = `
+                            <h4 class="partner-title">${displayName}</h4>
+                            <div class="partner-fields">
+                                <div class="form-group">
+                                    <label for="partner-name-${sport}">Partner Name <span class="required">*</span></label>
+                                    <input type="text" name="partners[${sport}][name]" data-sport="${sport}" 
+                                           id="partner-name-${sport}" required 
+                                           placeholder="Enter partner's full name" 
+                                           value="${savedValue.name || ''}">
+                                </div>
+                            </div>
+                        `;
+                        
+                        partnersContainer.appendChild(partnerDiv);
+                        newInputs.push(partnerDiv);
+                    }
                 }
+            });
+            
+            // Animate new inputs
+            newInputs.forEach((input, index) => {
+                gsap.from(input, {
+                    duration: 0.4,
+                    x: -20,
+                    opacity: 0,
+                    delay: wasHidden ? 0.3 + (index * 0.05) : 0.1 + (index * 0.05),
+                    ease: 'power2.out'
+                });
             });
 
             // Animate height auto for section
@@ -172,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners to sports checkboxes
     sportsCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
+            // Allow multiple selections - removed mutual exclusivity
             updatePartnersSection();
 
             // Animate checkbox selection
@@ -187,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
+    
     // Animate radio buttons
     const radioButtons = document.querySelectorAll('input[type="radio"]');
     radioButtons.forEach(radio => {
@@ -226,11 +264,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate partner names for partner sports
         const needsPartners = selectedSports.some(sport => partnerSports.includes(sport));
         if (needsPartners) {
-            const partnerInputs = partnersContainer.querySelectorAll('input[type="text"]');
+            const partnerNameInputs = partnersContainer.querySelectorAll('input[name*="[name]"]');
             let allPartnersFilled = true;
 
-            partnerInputs.forEach(input => {
-                if (!input.value.trim()) {
+            partnerNameInputs.forEach(input => {
+                if (!input.value || !input.value.trim()) {
                     allPartnersFilled = false;
                 }
             });
@@ -257,8 +295,13 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(key, value);
         }
 
-        // Animate submit button
+        // Animate submit button and disable it
         const submitBtn = document.querySelector('.submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="btn-text">Submitting...</span>';
+        }
+        
         gsap.to(submitBtn, {
             scale: 0.95,
             duration: 0.1,
@@ -266,6 +309,8 @@ document.addEventListener('DOMContentLoaded', function() {
             repeat: 1,
             ease: 'power2.out'
         });
+        
+        // Allow form to submit normally (no preventDefault)
     });
 
     // Animate alerts
