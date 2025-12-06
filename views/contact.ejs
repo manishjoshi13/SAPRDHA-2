@@ -3,11 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Spardha 2026</title>
+    <title>About Us - Spardha 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/contact.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #a855f7;
+            --secondary-color: #9333ea;
+            --accent-color: #ffffff;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --bg-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+            --sports-gradient: linear-gradient(135deg, #9333ea 0%, #a855f7 50%, #c084fc 100%);
+            --bg-dark: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #e5e7eb;
+            --border-color: #333333;
+        }
+
+        html, body { height:100%; min-height:100vh; margin:0; padding:0;overflow-x: hidden; font-family: 'Poppins', sans-serif !important; }
+        body {
+            font-family: 'Poppins', Arial, Helvetica, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-secondary);
+            min-height:100vh;
+            font-family: 'Poppins', sans-serif !important;
+        }
+        /* NAVBAR */
+
+
+
+        /* MAIN */
+        main.contact-main {
+            min-height: 70vh;
+            margin: 0;
+            padding-top: 35px;
+            padding-bottom: 15px;
+            background: transparent;
+            width: 100%;
+        }
+        .about-section {
+            background: var(--bg-card);
+            box-shadow: 0 7px 24px 0 rgba(168, 85, 247, 0.08), 0 1px 7px rgba(192, 132, 252, 0.14);
+            border-radius: 18px;
+            margin: 0 auto 34px auto;
+            padding: 34px 44px 30px 44px;
+            max-width: 940px;
+            width: 97vw;
+        }
+        .about-section h1 {
+            font-size: 2.18rem;
+            color: var(--primary-color);
+            font-weight: 800;
+            margin-bottom: 0.34em;
+            letter-spacing: -0.02em;
+        }
+        .about-section h2 {
+            color: var(--accent-color);
+            margin-top: 31px;
+            font-weight: 700;
+            font-size: 1.18rem;
+            margin-bottom: 10px;
+            letter-spacing: 0.02em;
+        }
+        .about-section p {
+            margin-bottom: 1.1em;
+            font-size: 1.07rem;
+            line-height: 1.73;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .about-section b { color: var(--primary-color); }
+
+        /* CAROUSEL */
+        .carousel-container {
+            background: var(--sports-gradient);
+            border-radius: 13px;
+            box-shadow: 0 2px 16px 0 rgba(168, 85, 247, 0.12);
+            margin: 20px auto 15px auto;
+            max-width: 520px;
+            min-width: 0;
+            width: 98%;
+            min-height: 150px;
+            padding: 14px 0 10px 0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            background: var(--secondary-color);
+            object-fit: cover;
+            border-radius: 9px;
+            min-height: 110px;
+            aspect-ratio: 16/8;
+            max-height: 260px;
+            /* placeholder color, assumes no img yet */
+        }
+        .carousel-slide.carousel-active { display: block;}
+        .carousel-controls {
+            position: absolute;
+            top: 49%;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            z-index: 9;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        .carousel-arrow {
+            pointer-events: auto;
+            background: var(--primary-color);
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.7rem;
+            cursor: pointer;
+            border-radius: 50%;
+            padding: 3px 11px;
+            margin: 0 8px;
+            box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
+            transition: background 0.14s, color 0.14s;
+        }
+        .carousel-arrow:focus,
+        .carousel-arrow:hover {
+            background: var(--secondary-color);
+            color: var(--accent-color);
+        }
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            margin-top: 13px;
+            gap: 7px;
+        }
+        .carousel-indicator {
+            width: 10px;
+            height: 10px;
+            background: var(--accent-color);
+            opacity: 0.3;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: background 0.13s, opacity 0.13s;
+        }
+        .carousel-indicator.active {
+            background: var(--primary-color);
+            opacity: 1;
+        }
+        /* DEV/COUNCIL CARDS */
+        .meet-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px 20px;
+            justify-content: flex-start;
+            margin: 13px 0 0 0;
+            width: 100%;
+        }
+        .meet-card {
+            background: var(--bg-dark);
+            border-radius: 10px;
+            box-shadow: 0 1px 7px 0 rgba(168, 85, 247, 0.11);
+            padding: 16px 14px 11px 14px;
+            min-width: 160px;
+            max-width: 210px;
+            flex: 1 1 160px;
+            margin-bottom: 9px;
+            transition: box-shadow 0.12s;
+            border: 1.3px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .meet-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.13rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            word-break: break-word;
+        }
+        .meet-card .meet-role {
+            color: var(--primary-color);
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+        .meet-card .meet-desc {
+            color: var(--text-secondary);
+            font-size: 0.96rem;
+            margin-top: 7px;
+            font-weight: 400;
+        }
+        /* MEET THE DEVELOPER special tweak for width on small screens */
+        .meet-grid.developer-grid {
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 10px;
+            margin-top: 6px;
+        }
+        .meet-grid.developer-grid .meet-card {
+            max-width: 520px;
+            min-width: 200px;
+            width: 100%;
+            max-height: 100% !important;
+        }
+        strong {
+            display: inline-block;
+            color: var(--secondary-color);
+            margin-top: 19px;
+            margin-bottom: 4px;
+            font-weight: 700;
+            font-size: 1.08rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            width: 100%;
+            padding: 19px 0 9px 0;
+            margin-top: 38px;
+        }
+        .footer-content{
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .footer-tagline {
+            font-size: 1.04rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-top: 3px;
+            letter-spacing: 0.045rem;
+        }
+
+        /* RESPONSIVENESS */
+        @media (max-width: 1100px) {
+            .about-section { max-width: 99vw;}
+        }
+        @media (max-width:900px) {
+            .about-section {
+                padding: 14px 2vw 12px 2vw;
+                padding: 16px 7vw 24px 7vw;
+            }
+        }
+        @media (max-width: 600px) {
+            .about-section {
+                padding: 9px 3vw 12px 3vw;
+            }
+            .meet-grid { flex-direction: column; gap: 8px;}
+            .carousel-container { height: auto; max-width: 99vw;}
+            .meet-card {
+                min-width: 0;
+                max-width: 100%;
+                max-height: 70px;
+                padding: 9px 7px 8px 9px;
+                margin-bottom: 6px;
+            }
+            .meet-card h3 {
+                margin-bottom: 3px;
+                font-size: 1.02rem;
+            }
+            .meet-card .meet-role {
+                font-size: 0.89rem;
+                margin-bottom: 0;
+            }
+            .meet-card .meet-desc {
+                font-size: 0.94rem;
+                margin-top: 3px;
+            }
+        }
+
+        /* Remove extra vertical space and tight card stacking on very small screens */
+        @media (max-width: 420px) {
+            .meet-grid { gap: 4px;}
+            .meet-card {
+                padding: 5px 5px 6px 7px;
+            }
+            .meet-card h3 {
+                font-size: 0.97rem;
+            }
+        }
+
+        /* Overlay, remove if not needed, keep dark for contrast */
+        .background-overlay {
+            position: fixed;
+            top: 0; left:0;
+            width: 100vw; height: 100vh;
+            z-index: -1;
+            background: var(--bg-gradient);
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
     <div class="background-overlay"></div>
@@ -15,80 +307,117 @@
         <div class="nav-container">
             <h2 class="logo">🏆 Spardha 2026</h2>
             <ul class="nav-menu">
-                <li><a href="/">Home</a></li>
+                <li><a href="/" >Home</a></li>
                 <li><a href="/form">Register</a></li>
-                <li><a href="/contact" class="active">Contact</a></li>
+                <li><a href="/contact" class="active" >About Us</a></li>
             </ul>
         </div>
     </nav>
 
     <main class="contact-main">
-        <div class="contact-container">
-            <div class="contact-header">
-                <h1>Contact Us</h1>
-                <p class="subtitle">Have questions? We're here to help!</p>
-            </div>
+        <section class="about-section" id="about">
+            <h1>About Us: Spardha — Annual Hostel Sports Month</h1>
+            <p>Spardha is our flagship annual hostel sports competition, celebrated with tremendous enthusiasm and unity every year. Organized jointly by the Boys’ and Girls’ Hostel Councils, Spardha brings together residents to participate in a wide range of sports events—testing their stamina, teamwork, discipline, and sportsmanship.</p>
+            <p>Throughout the month, students compete in cricket, football, badminton, volleyball, athletics, basketball, tug of war, dodgeball, and other fun events.</p>
+            <p><b>Spardha isn’t just a competition—it’s a celebration of hostel spirit.</b> It strengthens bonds, encourages healthy living, and gives every student a chance to showcase their skills on and off the field.</p>
+            <p>The month concludes with a Grand Closing Ceremony, where winners are felicitated and memories are made for years to come.</p>
 
-            <div class="contact-content">
-                <div class="contact-info">
-                    <h2>Get in Touch</h2>
-                    <div class="info-item">
-                        <div class="info-icon">📧</div>
-                        <div class="info-content">
-                            <h3>Email</h3>
-                            <p>support@spardha2026.com</p>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon">📞</div>
-                        <div class="info-content">
-                            <h3>Phone</h3>
-                            <p>+1 (555) 123-4567</p>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon">📍</div>
-                        <div class="info-content">
-                            <h3>Address</h3>
-                            <p>College Campus<br>City, State 12345</p>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon">🕒</div>
-                        <div class="info-content">
-                            <h3>Office Hours</h3>
-                            <p>Monday - Friday: 9:00 AM - 5:00 PM<br>Saturday: 10:00 AM - 2:00 PM</p>
-                        </div>
-                    </div>
+            <h2>Last Year Glimpse</h2>
+            <div class="carousel-container" id="carousel">
+                <!-- Slides -->
+                <img class="carousel-slide carousel-active" src="/assets/img1.jpeg" alt="Spardha Memories 1" />
+                <img class="carousel-slide" src="/assets/img2.jpg" alt="Spardha Memories 2" />
+                <img class="carousel-slide" src="/assets/img3.jpg" alt="Spardha Memories 3" />
+                <img class="carousel-slide" src="/assets/img4.jpg" alt="Spardha Memories 4" />
+                <img class="carousel-slide" src="/assets/img5.jpg" alt="Spardha Memories 5" />
+                <img class="carousel-slide" src="/assets/img6.jpg" alt="Spardha Memories 6" />
+                <img class="carousel-slide" src="/assets/img7.jpg" alt="Spardha Memories 7" />
+                <img class="carousel-slide" src="/assets/img8.jpg" alt="Spardha Memories 8" />
+                <img class="carousel-slide" src="/assets/img9.jpg" alt="Spardha Memories 9" />
+                <img class="carousel-slide" src="/assets/img10.jpg" alt="Spardha Memories 10" />
+                <!-- Carousel Controls -->
+                <div class="carousel-controls">
+                    <button class="carousel-arrow" id="carouselPrev" title="Previous">&#8678;</button>
+                    <button class="carousel-arrow" id="carouselNext" title="Next">&#8680;</button>
                 </div>
-
-                <div class="contact-form-section">
-                    <h2>Send us a Message</h2>
-                    <form class="contact-form">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" required placeholder="Your name">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required placeholder="your.email@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="subject">Subject</label>
-                            <input type="text" id="subject" name="subject" required placeholder="Message subject">
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" required placeholder="Your message here..."></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn">
-                            <span>Send Message</span>
-                            <span class="btn-icon">✉️</span>
-                        </button>
-                    </form>
+                <div class="carousel-indicators" id="carouselIndicators">
+                    <% for(let i=0; i<10; i++) { %>
+                        <button class="carousel-indicator <%= i===0 ? 'active' : '' %>" data-index="<%= i %>"></button>
+                    <% } %>
                 </div>
             </div>
-        </div>
+
+            <h2>Meet the Developer</h2>
+            <div class="meet-grid developer-grid" style="margin-bottom:21px;">
+                <div class="meet-card">
+                    <h3>Manish Joshi</h3>
+                    <div class="meet-role">3rd year CS Honours</div>
+                    <div class="meet-desc">
+                        I'm Manish—creative coder, sports enthusiast &amp; your last-year hostel sports secretary. I love turning ideas into reality, whether building apps or bringing people together through sports and friendly rivalry. Spardha has been my playground both on the courts and behind the scenes—helping orchestrate the action, designing fun, and connecting communities!
+                    </div>
+                </div>
+            </div>
+
+            <h2>Meet the Council</h2>
+            <strong>Boys Hostel Council</strong>
+            <div class="meet-grid">
+                <div class="meet-card">
+                    <h3>Siddhant Maheshwari</h3>
+                    <div class="meet-role">President</div>
+                </div>
+                <div class="meet-card">
+                    <h3>Irshad Alam</h3>
+                    <div class="meet-role">Secretary</div>
+                </div>
+                <div class="meet-card">
+                    <h3>Ayushmaan Parashar</h3>
+                    <div class="meet-role">Treasurer</div>
+                </div>
+            </div>
+            <strong>Girls Hostel Council</strong>
+            <div class="meet-grid">
+                <div class="meet-card">
+                    <h3>Vijaya Jaiswal</h3>
+                    <div class="meet-role">President</div>
+                </div>
+                <div class="meet-card">
+                    <h3>Akanksha Sharma</h3>
+                    <div class="meet-role">Secretary</div>
+                </div>
+                <div class="meet-card">
+                    <h3>Kanan Bhojwani</h3>
+                    <div class="meet-role">Treasurer</div>
+                </div>
+            </div>
+
+            <h2>Meet The Sports Secretaries</h2>
+            <strong>Boys Hostel</strong>
+            <div class="meet-grid">
+                <div class="meet-card">
+                    <h3>Byomkesh Biswal</h3>
+                    <div class="meet-role">Sports Secretary</div>
+                </div>
+                <div class="meet-card">
+                    <h3>Akshom Kalia</h3>
+                    <div class="meet-role">Sports Secretary</div>
+                </div>
+            </div>
+            <strong>Girls Hostel</strong>
+            <div class="meet-grid">
+                <div class="meet-card">
+                    <h3>Gauri Singh</h3>
+                    <div class="meet-role">Sports Secretary</div>
+                </div>
+                <div class="meet-card">
+                    <h3>Neha Kumari</h3>
+                    <div class="meet-role">Sports Secretary</div>
+                </div>
+                <div class="meet-card">
+                    <h3>Vrinda Nain</h3>
+                    <div class="meet-role">Sports Secretary</div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -98,6 +427,49 @@
         </div>
     </footer>
 
+    <script>
+        // Simple Vanilla JS Carousel (10 slides, all src empty for now!)
+        const slides = document.querySelectorAll('.carousel-slide');
+        const prevBtn = document.getElementById('carouselPrev');
+        const nextBtn = document.getElementById('carouselNext');
+        const indicators = document.getElementById('carouselIndicators').children;
+        let activeIndex = 0;
+        let AUTOPLAY_INT = null;
+
+        function showSlide(idx) {
+            slides.forEach((s, i) => {
+                s.classList.toggle('carousel-active', i === idx);
+                indicators[i].classList.toggle('active', i === idx);
+            });
+            activeIndex = idx;
+        }
+        function goToNext() {
+            showSlide((activeIndex + 1) % slides.length);
+        }
+        function goToPrev() {
+            showSlide((activeIndex - 1 + slides.length) % slides.length);
+        }
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+        }
+        Array.from(indicators).forEach((btn, i) => {
+            btn.addEventListener('click', () => showSlide(i));
+        });
+
+        function startAutoplay() {
+            if(AUTOPLAY_INT) clearInterval(AUTOPLAY_INT);
+            AUTOPLAY_INT = setInterval(goToNext, 4800);
+        }
+        function stopAutoplay() {
+            if(AUTOPLAY_INT) clearInterval(AUTOPLAY_INT);
+        }
+        if(slides.length>1) {
+            startAutoplay();
+            document.getElementById('carousel').addEventListener('mouseenter', stopAutoplay);
+            document.getElementById('carousel').addEventListener('mouseleave', startAutoplay);
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="/js/contact.js"></script>
 </body>
