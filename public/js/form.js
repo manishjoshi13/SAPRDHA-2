@@ -1,4 +1,5 @@
-// Form page JavaScript with GSAP animations
+// Form page JavaScript with GSAP animations with enhanced field validation & data logging
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('sportsForm');
     const sportsCheckboxes = document.querySelectorAll('input[name="sports"]');
@@ -6,6 +7,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const partnersContainer = document.getElementById('partnersContainer');
     const container = document.querySelector('.container');
 
+    // All required fields (update these according to your form's IDs or name attributes)
+    const requiredFieldSelectors = [
+        'input[name="name"]',
+        'input[name="email"]',
+        'select[name="course"],input[name="course"]',
+        'select[name="year"],input[name="year"]',
+        'input[name="gender"]'
+    ];
+    
     // GSAP Animations on page load
     gsap.from('.container', {
         duration: 0.8,
@@ -41,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 ease: 'power2.out'
             });
         });
-
         input.addEventListener('blur', function() {
             gsap.to(this, {
                 scale: 1,
@@ -68,13 +77,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Utility function to animate height auto (GSAP doesn't support height:auto directly)
     function animateHeightAuto(element, animOpts = {}) {
-        // Get current height
         const startHeight = element.offsetHeight;
-        // Temporarily show all children to get new height
         element.style.height = 'auto';
         const endHeight = element.offsetHeight;
         element.style.height = startHeight + 'px';
-        // Animate to new height
         gsap.to(element, Object.assign({
             height: endHeight,
             opacity: 1,
@@ -84,15 +90,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }, animOpts));
     }
 
-    // Function to update partners section
+    // Function to update partners section (unchanged)
     function updatePartnersSection() {
         const selectedSports = Array.from(sportsCheckboxes)
             .filter(cb => cb.checked)
             .map(cb => cb.value);
 
-        const needsPartners = selectedSports.some(sport => 
-            partnerSports.includes(sport)
-        );
+        const needsPartners = selectedSports.some(sport => partnerSports.includes(sport));
 
         if (needsPartners) {
             // Save existing input values before any changes
@@ -104,22 +108,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!existingValues[sport]) {
                         existingValues[sport] = {};
                     }
-                    existingValues[sport].name = input.value; // Save even if empty to preserve state
+                    existingValues[sport].name = input.value;
                 }
             });
 
             const wasHidden = partnersSection.style.display === 'none' || partnersSection.style.display === '' || partnersContainer.children.length === 0;
 
-            // Show the section
             partnersSection.style.display = 'block';
-            partnersSection.style.overflow = 'visible'; // Ensure visible while animating
+            partnersSection.style.overflow = 'visible';
 
-            // Get currently selected partner sports
-            const selectedPartnerSports = selectedSports.filter(sport => 
-                partnerSports.includes(sport)
-            );
+            const selectedPartnerSports = selectedSports.filter(sport => partnerSports.includes(sport));
 
-            // Remove inputs for sports that are no longer selected
+            // Remove inputs for sports no longer selected
             const existingDivs = partnersContainer.querySelectorAll('.partner-input');
             existingDivs.forEach(div => {
                 const input = div.querySelector('input[data-sport]');
@@ -131,9 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Add or update partner/team inputs for selected sports
             let newInputs = [];
-            
             selectedPartnerSports.forEach(sport => {
-                // Handle regular partner sports
                 if (partnerSports.includes(sport)) {
                     const existingInput = document.getElementById(`partner-name-${sport}`);
                     if (!existingInput) {
@@ -149,13 +147,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="form-group">
                                     <label for="partner-name-${sport}">Partner Name <span class="required">*</span></label>
                                     <input type="text" name="partners[${sport}][name]" data-sport="${sport}" 
-                                           id="partner-name-${sport}" required 
-                                           placeholder="Enter partner's full name" 
-                                           value="${savedValue.name || ''}">
+                                        id="partner-name-${sport}" required 
+                                        placeholder="Enter partner's full name" 
+                                        value="${savedValue.name || ''}">
                                 </div>
                             </div>
                         `;
-                        
                         partnersContainer.appendChild(partnerDiv);
                         newInputs.push(partnerDiv);
                     }
@@ -172,17 +169,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     ease: 'power2.out'
                 });
             });
-
-            // Animate height auto for section
             if (wasHidden) {
                 partnersSection.style.height = '0px';
                 partnersSection.style.opacity = '0';
-                // Animate to the new height
                 requestAnimationFrame(() => {
                     animateHeightAuto(partnersSection, {opacity: 1});
                 });
             } else {
-                // Animate height change when adding/removing inputs
                 animateHeightAuto(partnersSection, {duration: 0.35, opacity: 1});
             }
         } else {
@@ -194,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 partnersSection.style.opacity = '';
                 partnersContainer.innerHTML = '';
             };
-            // Animate out
             gsap.to(partnersSection, {
                 duration: 0.3,
                 height: 0,
@@ -209,12 +201,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners to sports checkboxes
     sportsCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
-            // Allow multiple selections - removed mutual exclusivity
             updatePartnersSection();
-
-            // Animate checkbox selection
             const label = this.closest('.sport-checkbox');
-            if (this.checked) {
+            if (this.checked && label) {
                 gsap.to(label, {
                     scale: 1.05,
                     duration: 0.2,
@@ -231,32 +220,77 @@ document.addEventListener('DOMContentLoaded', function() {
     radioButtons.forEach(radio => {
         radio.addEventListener('change', function() {
             const label = this.closest('.radio-label');
-            gsap.to(label, {
-                scale: 1.1,
-                duration: 0.2,
-                yoyo: true,
-                repeat: 1,
-                ease: 'power2.out'
-            });
+            if (label) {
+                gsap.to(label, {
+                    scale: 1.1,
+                    duration: 0.2,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: 'power2.out'
+                });
+            }
         });
     });
 
+    // Enhanced validation for all required fields
+    function validateRequiredFields() {
+        let allOk = true;
+        let missingFields = [];
+        requiredFieldSelectors.forEach(sel => {
+            let field = form.querySelector(sel);
+            if (field) {
+                if (field.type === 'radio') {
+                    // For radio types, check any checked with same name
+                    let checkedRadio = form.querySelector(`${sel}:checked`);
+                    if (!checkedRadio) {
+                        allOk = false;
+                        missingFields.push(sel);
+                    }
+                } else if (!field.value || !field.value.trim()) {
+                    allOk = false;
+                    missingFields.push(sel);
+                }
+            } else {
+                // If field not found, warn (this could mean selector is wrong!)
+                allOk = false;
+                missingFields.push(sel);
+            }
+        });
+        return {pass: allOk, fields: missingFields};
+    }
+
     // Form submission handler
     form.addEventListener('submit', function(e) {
+        // Validate ALL required fields (name, email, course, year, gender)
+        const requiredCheck = validateRequiredFields();
+        if (!requiredCheck.pass) {
+            e.preventDefault();
+            // Animate & Alert that all required fields must be filled
+            gsap.to(form, {
+                x: [-10, 10, -10, 10, 0],
+                duration: 0.5,
+                ease: 'power2.out'
+            });
+            let fieldMessage = 'Please enter all required fields:';
+            if (requiredCheck.fields.length) {
+                fieldMessage += '\n' + requiredCheck.fields.join('\n');
+            }
+            alert(fieldMessage);
+            return false;
+        }
+
+        // Sports selection required
         const selectedSports = Array.from(sportsCheckboxes)
             .filter(cb => cb.checked)
             .map(cb => cb.value);
 
         if (selectedSports.length === 0) {
             e.preventDefault();
-
-            // Animate error
             gsap.to('.checkbox-group', {
                 x: [-10, 10, -10, 10, 0],
                 duration: 0.5,
                 ease: 'power2.out'
             });
-
             alert('Please select at least one sport.');
             return false;
         }
@@ -266,51 +300,61 @@ document.addEventListener('DOMContentLoaded', function() {
         if (needsPartners) {
             const partnerNameInputs = partnersContainer.querySelectorAll('input[name*="[name]"]');
             let allPartnersFilled = true;
-
             partnerNameInputs.forEach(input => {
                 if (!input.value || !input.value.trim()) {
                     allPartnersFilled = false;
                 }
             });
-
             if (!allPartnersFilled) {
                 e.preventDefault();
-
-                // Animate error
                 gsap.to('#partnersSection', {
                     x: [-10, 10, -10, 10, 0],
                     duration: 0.5,
                     ease: 'power2.out'
                 });
-
                 alert('Please enter partner names for all selected partner sports.');
                 return false;
             }
         }
 
-        // Log form data before submission for debugging
+        // Enhanced form data logging for model debugging
         const formData = new FormData(form);
-        console.log('Form data being submitted:');
+        let logObj = {};
+        console.log('--- Form Data Being Submitted ---');
         for (let [key, value] of formData.entries()) {
+            logObj[key] = value;
             console.log(key, value);
         }
+        // Show how partners[] and sports[] look
+        if (formData.getAll('sports').length) {
+            console.log('Selected sports:', formData.getAll('sports'));
+        }
+        const partnerFields = {};
+        for (const pair of formData.entries()) {
+            if (pair[0].startsWith('partners[')) {
+                partnerFields[pair[0]] = pair[1];
+            }
+        }
+        if (Object.keys(partnerFields).length) {
+            console.log('Partners fields:', partnerFields);
+        }
+        // For further debug, serialize all values as would be POSTed:
+        console.log('Serialized for POST:', JSON.stringify(Object.fromEntries(formData)));
 
         // Animate submit button and disable it
         const submitBtn = document.querySelector('.submit-btn');
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="btn-text">Submitting...</span>';
+            gsap.to(submitBtn, {
+                scale: 0.95,
+                duration: 0.1,
+                yoyo: true,
+                repeat: 1,
+                ease: 'power2.out'
+            });
         }
-        
-        gsap.to(submitBtn, {
-            scale: 0.95,
-            duration: 0.1,
-            yoyo: true,
-            repeat: 1,
-            ease: 'power2.out'
-        });
-        
-        // Allow form to submit normally (no preventDefault)
+        // Allow form to submit to server
     });
 
     // Animate alerts

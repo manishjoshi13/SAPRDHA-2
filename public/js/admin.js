@@ -1,6 +1,39 @@
-// Admin page JavaScript with GSAP animations
+// Admin page JavaScript with GSAP animations + Partner Sport Filter
 let allRegistrations = [];
 let filteredRegistrations = [];
+
+const PARTNER_SPORTS = [
+    'badminton-doubles',
+    'badminton-mixed',
+    'tabletennis-doubles',
+    'tabletennis-mixed',
+    'carrom-doubles'
+];
+
+// Dynamically add partner sport filter dropdown
+function addPartnerSportFilter() {
+    const filtersSection = document.querySelector('.filters-section');
+    if (!filtersSection) return;
+    if (document.getElementById('partnerSportFilter')) return; // Already present
+
+    const label = document.createElement('label');
+    label.textContent = "Partner Filter: ";
+    label.setAttribute('for', 'partnerSportFilter');
+    label.style.marginLeft = "16px";
+
+    const select = document.createElement('select');
+    select.id = 'partnerSportFilter';
+    select.style.marginLeft = "4px";
+    select.innerHTML = `<option value="">All/Any Partner</option>` +
+        PARTNER_SPORTS.map(s => 
+            `<option value="${s}">${s.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`
+        ).join('');
+    
+    // insert before stats-section if possible, else append
+    const insertionPoint = document.querySelector('.stats-section') || document.querySelector('.stat-section');
+    filtersSection.insertBefore(label, insertionPoint);
+    filtersSection.insertBefore(select, insertionPoint);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // GSAP Animations on page load
@@ -41,10 +74,15 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
+    addPartnerSportFilter();
+
     loadRegistrations();
 
     document.getElementById('applyFilters').addEventListener('click', applyFilters);
     document.getElementById('downloadPDF').addEventListener('click', downloadPDF);
+
+    // Optionally, trigger filtering on partner filter change
+    document.getElementById('partnerSportFilter').addEventListener('change', applyFilters);
 });
 
 async function loadRegistrations() {
@@ -124,6 +162,7 @@ function applyFilters() {
     const sportFilter = document.getElementById('sportFilter').value;
     const yearFilter = document.getElementById('yearFilter').value;
     const genderFilter = document.getElementById('genderFilter').value;
+    const partnerSportFilter = document.getElementById('partnerSportFilter').value;
 
     gsap.to('#applyFilters', {
         scale: 0.95,
@@ -134,10 +173,20 @@ function applyFilters() {
     });
 
     filteredRegistrations = allRegistrations.filter(reg => {
+        // Existing logic
         const sportMatch = !sportFilter || (Array.isArray(reg.sports) && reg.sports.includes(sportFilter));
         const yearMatch = !yearFilter || reg.year?.toString() === yearFilter;
         const genderMatch = !genderFilter || reg.gender === genderFilter;
-        return sportMatch && yearMatch && genderMatch;
+
+        // New: filter by partner sport. Show only registrations that have a partner entry for selected sport.
+        let partnerSportMatch = true;
+        if (partnerSportFilter) {
+            partnerSportMatch = Array.isArray(reg.partners) && reg.partners.some(p => 
+                p && p.sport === partnerSportFilter && p.name && p.name.trim()
+            );
+        }
+
+        return sportMatch && yearMatch && genderMatch && partnerSportMatch;
     });
 
     displayRegistrations(filteredRegistrations);
@@ -246,6 +295,7 @@ function updateStats(registrations) {
     const sportFilter = document.getElementById('sportFilter').value;
     const yearFilter = document.getElementById('yearFilter').value;
     const genderFilter = document.getElementById('genderFilter').value;
+    const partnerSportFilter = document.getElementById('partnerSportFilter') ? document.getElementById('partnerSportFilter').value : '';
 
     let filterText = '';
     if (sportFilter) filterText += sportFilter.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -257,6 +307,10 @@ function updateStats(registrations) {
     else filterText += 'All Years';
 
     if (genderFilter) filterText += ` - ${genderFilter.charAt(0).toUpperCase() + genderFilter.slice(1)}`;
+
+    if (partnerSportFilter) {
+        filterText += ` - Partner: ${partnerSportFilter.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
+    }
 
     // Animate just the text content (never animate opacity to 0 or change display of parent!)
     if (currentFilter.textContent !== filterText) {
@@ -343,11 +397,13 @@ async function downloadPDF() {
     const sportFilter = document.getElementById('sportFilter').value;
     const yearFilter = document.getElementById('yearFilter').value;
     const genderFilter = document.getElementById('genderFilter').value;
+    const partnerSportFilter = document.getElementById('partnerSportFilter') ? document.getElementById('partnerSportFilter').value : '';
 
     const params = new URLSearchParams();
     if (sportFilter) params.append('sport', sportFilter);
     if (yearFilter) params.append('year', yearFilter);
     if (genderFilter) params.append('gender', genderFilter);
+    if (partnerSportFilter) params.append('partner', partnerSportFilter);
 
     window.open(`/admin/download-pdf?${params.toString()}`, '_blank');
 }

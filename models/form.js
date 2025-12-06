@@ -1,13 +1,15 @@
 const mongoose = require("mongoose");
 
-// Define sport categories and their configurations
+/**
+ * SPORT CATEGORIES & CONSTANTS
+ */
 const SPORT_CATEGORIES = {
     OUTDOOR: ['cricket', 'football', 'volleyball'],
     INDOOR: {
-        'badminton': ['single', 'doubles', 'mixed'],
-        'tabletennis': ['single', 'doubles', 'mixed'],
-        'carrom': ['singles', 'doubles'],
-        'chess': ['singles']
+        badminton: ['single', 'doubles', 'mixed'],
+        tabletennis: ['single', 'doubles', 'mixed'],
+        carrom: ['singles', 'doubles'],
+        chess: ['singles']
     },
     ATHLETICS: ['100m', '200m', '650m', '1200m', 'relay'],
     FUN_ACTIVITIES: [
@@ -17,30 +19,62 @@ const SPORT_CATEGORIES = {
     ]
 };
 
-// Generate all possible sport values
+// Generate complete list of valid sports (as sent from the form)
 const ALL_SPORTS = [
     ...SPORT_CATEGORIES.OUTDOOR,
-    ...Object.entries(SPORT_CATEGORIES.INDOOR).flatMap(([sport, types]) => 
+    ...Object.entries(SPORT_CATEGORIES.INDOOR).flatMap(([sport, types]) =>
         types.map(type => `${sport}-${type}`)
     ),
     ...SPORT_CATEGORIES.ATHLETICS,
     ...SPORT_CATEGORIES.FUN_ACTIVITIES
 ];
 
-// Define sports that require partners (doubles and mixed)
+// The sports (from ALL_SPORTS) that can require partners
 const PARTNER_SPORTS = [
     'badminton-doubles', 'badminton-mixed',
     'tabletennis-doubles', 'tabletennis-mixed',
     'carrom-doubles'
 ];
 
+// Validation helper for partner field
+function isPartnerSport(val) {
+    return PARTNER_SPORTS.includes(val);
+}
+
+/**
+ * PARTNER SCHEMA
+ * If the user chooses a sport that requires a partner, partners[] entry should be filled.
+ * partners: [{ sport, name }] with requirements: sport is one of PARTNER_SPORTS, name is required.
+ */
+const partnerSchema = new mongoose.Schema({
+    sport: {
+        type: String,
+        enum: {
+            values: PARTNER_SPORTS,
+            message: 'Invalid partner sport'
+        },
+        required: [true, 'Sport type is required for partner']
+    },
+    name: {
+        type: String,
+        required: [true, 'Partner name is required'],
+        trim: true,
+        maxlength: [100, 'Partner name is too long']
+    }
+}, { _id: false });
+
+/**
+ * MAIN FORM SCHEMA
+ * This defines how the registration documents are saved.
+ * Note: Ensure the FORM matches the front-end field names and POST data.
+ */
 const formSchema = new mongoose.Schema({
-    // Basic Information
+    // BASIC FIELDS
     name: {
         type: String,
         required: [true, 'Name is required'],
         trim: true,
-        maxlength: [100, 'Name cannot be more than 100 characters']
+        maxlength: [100, 'Name cannot be more than 100 characters'],
     },
     email: {
         type: String,
@@ -48,57 +82,63 @@ const formSchema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         unique: true,
-        match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
+        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please enter a valid email address']
     },
     course: {
         type: String,
         required: [true, 'Course is required'],
         trim: true,
-        maxlength: [100, 'Course name is too long']
+        maxlength: [100, 'Course cannot be more than 100 characters']
     },
     year: {
         type: Number,
-        required: [true, 'Year of study is required'],
-        min: [1, 'Invalid year of study'],
-        max: [4, 'Invalid year of study']
+        required: [true, 'Year is required'],
+        min: [1, 'Year must be at least 1'],
+        max: [4, 'Year must be at most 4']
     },
     gender: {
         type: String,
+        required: [true, 'Gender is required'],
         enum: {
             values: ['boy', 'girl'],
             message: 'Gender must be either boy or girl'
-        },
-        required: [true, 'Gender is required']
+        }
     },
-    
-    // Sports Selection
-    sports: [{
-        type: String,
-        enum: {
-            values: ALL_SPORTS,
-            message: 'Invalid sport selected'
-        },
-        required: [true, 'At least one sport must be selected']
-    }],
-    
-    // Partners for doubles/mixed sports
-    partners: [{
-        sport: {
-            type: String,
-            enum: PARTNER_SPORTS,
-            required: [true, 'Sport type is required for partner']
-        },
-        name: {
-            type: String,
-            required: [true, 'Partner name is required'],
-            trim: true,
-            maxlength: [100, 'Partner name is too long']
-        },
-        default: []
-    }],
-    
-    
-    // System Fields
+
+    // SPORTS (REQUIRED ARRAY OF STRINGS)
+    sports: {
+        type: [String],
+        required: [true, 'At least one sport must be selected'],
+        validate: {
+            validator: function (arr) {
+                return Array.isArray(arr) && arr.length > 0 && arr.every(s => ALL_SPORTS.includes(s));
+            },
+            message: 'One or more selected sports are invalid or empty.'
+        }
+    },
+
+    // PARTNERS (OPTIONAL but required in context of certain sports)
+    partners: {
+        type: [partnerSchema],
+        default: [],
+        validate: {
+            validator: function (arr) {
+                // If selected sports require partners, partners[] should contain a valid entry for each
+                if (!Array.isArray(this.sports) || this.sports.length === 0) return arr.length === 0;
+                const requiredSports = this.sports.filter(s => PARTNER_SPORTS.includes(s));
+                if (requiredSports.length === 0) return arr.length === 0;
+                // Make sure every required partner sport has an entry, and not more
+                const uniquePartnerSports = arr.map(p => p.sport);
+                return (
+                    requiredSports.length === arr.length &&
+                    requiredSports.every(sreq => uniquePartnerSports.includes(sreq))
+                );
+            },
+            message: 'Each selected partner sport must have exactly one corresponding partner name.'
+        }
+    },
+
+    // SYSTEM/ADMIN FIELDS
     registrationDate: {
         type: Date,
         default: Date.now
@@ -117,47 +157,41 @@ const formSchema = new mongoose.Schema({
         trim: true,
         maxlength: [1000, 'Notes cannot exceed 1000 characters']
     }
-}, { 
+}, {
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
 
-// Add indexes for better query performance
-
+/**
+ * FIX: Sports index for large arrays
+ */
 formSchema.index({ 'sports': 1 });
 formSchema.index({ status: 1 });
 
-// Virtual for full name
-formSchema.virtual('fullName').get(function() {
+/**
+ * UTILITIES: Virtuals and methods
+ */
+formSchema.virtual('fullName').get(function () {
     return this.name;
 });
 
-// Pre-save hook to update lastUpdated
-// formSchema.pre('save', function(next) {
-//     this.lastUpdated = Date.now();
-//     next();
-
-
-    
-// });
-
-// Static method to get sport categories
-formSchema.statics.getSportCategories = function() {
+formSchema.statics.getSportCategories = function () {
     return SPORT_CATEGORIES;
 };
 
-// Static method to get partner sports
-formSchema.statics.getPartnerSports = function() {
+formSchema.statics.getPartnerSports = function () {
     return PARTNER_SPORTS;
 };
 
-// Method to check if a sport requires a partner
-formSchema.methods.requiresPartner = function(sport) {
+formSchema.methods.requiresPartner = function (sport) {
     return PARTNER_SPORTS.includes(sport);
 };
 
-// Create and export the model
+/**
+ * EXPORT MODEL
+ * Export Form, categories, partners constant for use elsewhere.
+ */
 const Form = mongoose.model("Form", formSchema);
 
 module.exports = {
@@ -165,4 +199,3 @@ module.exports = {
     SPORT_CATEGORIES,
     PARTNER_SPORTS
 };
-
