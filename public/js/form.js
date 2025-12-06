@@ -359,14 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Animate alerts
     const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-        gsap.from(alert, {
-            duration: 0.5,
-            x: -50,
-            opacity: 0,
-            ease: 'power2.out'
-        });
-    });
+    
 
     // Initial adjustment in case of pre-selected sports
     updatePartnersSection();
