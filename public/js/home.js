@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         delay: 0.2,
         ease: 'back.out(1.7)'
     });
+    gsap.from("#rules", {duration: 0.4,opacity: 0, delay: 0.8, ease: "back.out(1.7)"})
 
     gsap.from('.hero-title', {
         duration: 1,
