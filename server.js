@@ -6,15 +6,30 @@ const methodOverride = require("method-override");
 const PDFDocument = require("pdfkit");
 require("dotenv").config();
 
+// Validate required environment variables
+if (!process.env.MONGODB_URI) {
+  console.error("❌ MONGODB_URI environment variable is not set");
+  process.exit(1);
+}
+
 const { Form } = require("./models/form");
 
 // --- DB Connection
 async function main() {
-  await mongoose.connect(process.env.MONGODB_URI);
+  await mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+  });
 }
 main()
-  .then(() => console.log("Connection success"))
-  .catch((err) => console.log(err));
+  .then(() => console.log("✅ MongoDB Connection success"))
+  .catch((err) => {
+    console.error("❌ MongoDB Connection failed:", err);
+    process.exit(1); // Exit if database connection fails
+  });
+  });
 
 // --- View Engine Setup
 app.set("view engine", "ejs");
@@ -39,6 +54,36 @@ app.get("/contact", (req, res) => {
 });
 app.get("/admin", (req, res) => {
   res.render("admin");
+});
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? "connected" : "disconnected";
+  res.json({
+    status: "ok",
+    database: dbStatus,
+    timestamp: new Date().toISOString(),
+    mongoUri: process.env.MONGODB_URI ? "set" : "not set"
+  });
+});
+
+// Test database write (temporary - remove after testing)
+app.get("/test-db", async (req, res) => {
+  try {
+    const testForm = new Form({
+      name: "Test User",
+      email: `test${Date.now()}@example.com`,
+      course: "Test Course",
+      year: 1,
+      gender: "boy",
+      sports: ["cricket"],
+      partners: []
+    });
+    const saved = await testForm.save();
+    res.json({ success: true, id: saved._id });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // --- FORM SUBMISSION (CREATE)
@@ -162,8 +207,8 @@ app.post("/form", async (req, res) => {
       });
     }
 
-    await formData.save();
-    console.log("Form data saved successfully.");
+    const savedData = await formData.save();
+    console.log("✅ Form data saved successfully:", savedData._id);
     res.redirect("/form?success=true");
   } catch (err) {
     console.error("Form submission error: ", err);
