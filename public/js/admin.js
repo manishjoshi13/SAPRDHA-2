@@ -339,11 +339,6 @@ async function deleteRegistration(id) {
     if (!confirm('Are you sure you want to delete this registration?')) {
         return;
     }
-    const password = prompt('Please enter the delete password:');
-    if (password !== "ILoveYou") {
-        alert('Incorrect password. Deletion cancelled.');
-        return;
-    }
 
     try {
         const rows = document.querySelectorAll('#tableBody tr');
