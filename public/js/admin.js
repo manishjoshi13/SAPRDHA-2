@@ -1,5 +1,4 @@
-// Admin page JavaScript with GSAP animations + Partner Sport Filter + Single-sport view when sport is filtered
-
+// Admin page JavaScript with GSAP animations + Partner Sport Filter
 let allRegistrations = [];
 let filteredRegistrations = [];
 
@@ -11,11 +10,11 @@ const PARTNER_SPORTS = [
     'carrom-doubles'
 ];
 
-// Adds the Partner Sport Filter dropdown to the filter section
+// Dynamically add partner sport filter dropdown
 function addPartnerSportFilter() {
     const filtersSection = document.querySelector('.filters-section');
     if (!filtersSection) return;
-    if (document.getElementById('partnerSportFilter')) return;
+    if (document.getElementById('partnerSportFilter')) return; // Already present
 
     const label = document.createElement('label');
     label.textContent = "Partner Filter: ";
@@ -29,7 +28,8 @@ function addPartnerSportFilter() {
         PARTNER_SPORTS.map(s => 
             `<option value="${s}">${s.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`
         ).join('');
-
+    
+    // insert before stats-section if possible, else append
     const insertionPoint = document.querySelector('.stats-section') || document.querySelector('.stat-section');
     filtersSection.insertBefore(label, insertionPoint);
     filtersSection.insertBefore(select, insertionPoint);
@@ -80,9 +80,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('applyFilters').addEventListener('click', applyFilters);
     document.getElementById('downloadPDF').addEventListener('click', downloadPDF);
+
+    // Optionally, trigger filtering on partner filter change
     document.getElementById('partnerSportFilter').addEventListener('change', applyFilters);
-    // To also update on sport filter change!
-    document.getElementById('sportFilter').addEventListener('change', applyFilters);
 });
 
 async function loadRegistrations() {
@@ -173,15 +173,15 @@ function applyFilters() {
     });
 
     filteredRegistrations = allRegistrations.filter(reg => {
-        // Main filters
+        // Existing logic
         const sportMatch = !sportFilter || (Array.isArray(reg.sports) && reg.sports.includes(sportFilter));
         const yearMatch = !yearFilter || reg.year?.toString() === yearFilter;
         const genderMatch = !genderFilter || reg.gender === genderFilter;
 
-        // Partner filter: Only registrations that have a partner entry for selected sport
+        // New: filter by partner sport. Show only registrations that have a partner entry for selected sport.
         let partnerSportMatch = true;
         if (partnerSportFilter) {
-            partnerSportMatch = Array.isArray(reg.partners) && reg.partners.some(p =>
+            partnerSportMatch = Array.isArray(reg.partners) && reg.partners.some(p => 
                 p && p.sport === partnerSportFilter && p.name && p.name.trim()
             );
         }
@@ -196,9 +196,6 @@ function applyFilters() {
 
 function displayRegistrations(registrations) {
     const tbody = document.getElementById('tableBody');
-    const partnerSportFilter = document.getElementById('partnerSportFilter').value;
-    const sportFilter = document.getElementById('sportFilter').value;
-
     if (!Array.isArray(registrations) || registrations.length === 0) {
         tbody.innerHTML = `<tr>
             <td colspan="7" style="text-align:center; padding:40px 20px; color:#666;">
@@ -220,26 +217,10 @@ function displayRegistrations(registrations) {
             registrations.forEach((reg, index) => {
                 const row = document.createElement('tr');
 
-                // Display only the filtered sport in sportsList, if filtered, else all
-                let sportsList;
-                if (sportFilter) {
-                    if (Array.isArray(reg.sports) && reg.sports.includes(sportFilter)) {
-                        sportsList = sportFilter.replace('-', ' ');
-                    } else {
-                        sportsList = 'N/A';
-                    }
-                } else {
-                    sportsList = Array.isArray(reg.sports) ? reg.sports.map(s => s.replace('-', ' ')).join(', ') : 'N/A';
-                }
-                
-                // For partner cell: if partner filter applied, show only that; else show all partners (each sport)
+                const sportsList = Array.isArray(reg.sports) ? reg.sports.map(s => s.replace('-', ' ')).join(', ') : 'N/A';
+
                 let partnersHtml = 'N/A';
-                if (partnerSportFilter && reg.partners && Array.isArray(reg.partners)) {
-                    const p = reg.partners.find(p => p && p.sport === partnerSportFilter && p.name && p.name.trim());
-                    if (p) {
-                        partnersHtml = `${p.name}`;
-                    }
-                } else if (reg.partners && Array.isArray(reg.partners) && reg.partners.length > 0) {
+                if (reg.partners && Array.isArray(reg.partners) && reg.partners.length > 0) {
                     partnersHtml = reg.partners.map(p => {
                         if (p && p.sport && p.name) {
                             return `${p.sport.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}: ${p.name}`;
@@ -256,6 +237,7 @@ function displayRegistrations(registrations) {
                     <td>${sportsList}</td>
                     <td>${partnersHtml}</td>
                     <td>
+                       
                         <button class="btn-delete" onclick="deleteRegistration('${reg._id}')">Delete</button>
                     </td>
                 `;
