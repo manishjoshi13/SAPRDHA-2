@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
  * SPORT CATEGORIES & CONSTANTS
  */
 const SPORT_CATEGORIES = {
-    OUTDOOR: ['cricket', 'football', 'volleyball'],
+    OUTDOOR: ['cricket', 'football', 'volleyball', 'kho-kho'],
     INDOOR: {
         badminton: ['single', 'doubles', 'mixed'],
         tabletennis: ['single', 'doubles', 'mixed'],
